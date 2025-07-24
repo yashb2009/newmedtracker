@@ -115,7 +115,7 @@ class _ElementDetailsScreenState extends State<ElementDetailsScreen> {
                   Row(
                     children: [
                       Text(
-                        'Category:  ',
+                        'Name:          ',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -136,7 +136,7 @@ class _ElementDetailsScreenState extends State<ElementDetailsScreen> {
                   Row(
                     children: [
                       Text(
-                        'Style:         ',
+                        'Frequency: ',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
@@ -157,7 +157,7 @@ class _ElementDetailsScreenState extends State<ElementDetailsScreen> {
                   Row(
                     children: [
                       Text(
-                        'Valuation:  ',
+                        'Dosage:       ',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
