@@ -39,6 +39,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final DateFormat _dateFormatter = DateFormat('MMM d, y - h:mm a');
   DateTime _lastModifiedDate = DateTime.now();
   final IsarService _isarService = IsarService();
+  bool _isTileView = false; // Toggle state for tile/list view
 
   @override
   void initState() {
@@ -100,6 +101,102 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  Widget _buildTileView() {
+    return GridView.builder(
+      padding: EdgeInsets.all(8),
+      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 3,
+        crossAxisSpacing: 8,
+        mainAxisSpacing: 8,
+        childAspectRatio: 1.0,
+      ),
+      itemCount: items.length,
+      itemBuilder: (context, index) {
+        final item = items[index];
+        return GestureDetector(
+          onTap: () async {
+            final updatedItem = await Navigator.push<Item>(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ElementDetailsScreen(item: item),
+              ),
+            );
+            if (updatedItem != null) {
+              await _updateItem(updatedItem);
+            }
+          },
+          onLongPress: () async {
+            final shouldDelete = await showDialog<bool>(
+              context: context,
+              builder: (context) => AlertDialog(
+                title: Text('Delete Item'),
+                content: Text('Are you sure you want to delete this item?'),
+                actions: [
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, false),
+                    child: Text('Cancel'),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pop(context, true),
+                    child: Text('Delete', style: TextStyle(color: Colors.red)),
+                  ),
+                ],
+              ),
+            );
+            if (shouldDelete == true) {
+              await _deleteItem(item);
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text('Item deleted')),
+              );
+            }
+          },
+          child: Stack(
+            fit: StackFit.expand,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: item.image.existsSync()
+                    ? Image.file(
+                        item.image,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            color: Colors.grey[300],
+                            child: Icon(Icons.broken_image, color: Colors.grey, size: 40),
+                          );
+                        },
+                      )
+                    : Container(
+                        color: Colors.grey[300],
+                        child: Icon(Icons.image_not_supported, color: Colors.grey, size: 40),
+                      ),
+              ),
+              Positioned(
+                top: 4,
+                left: 4,
+                child: Container(
+                  padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: Colors.black54,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child: Text(
+                    '${index + 1}',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -110,6 +207,15 @@ class _HomeScreenState extends State<HomeScreen> {
           onPressed: _sortItems,
         ),
         actions: [
+          IconButton(
+            icon: Icon(_isTileView ? Icons.view_list : Icons.view_module),
+            onPressed: () {
+              setState(() {
+                _isTileView = !_isTileView;
+              });
+            },
+            tooltip: _isTileView ? 'List View' : 'Tile View',
+          ),
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () async {
@@ -151,7 +257,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   )
-                : ListView.builder(
+                : _isTileView
+                    ? _buildTileView()
+                    : ListView.builder(
                     itemCount: items.length,
                     itemBuilder: (context, index) {
                       final item = items[index];
