@@ -38,6 +38,53 @@ class _ElementDetailsScreenState extends State<ElementDetailsScreen> {
     super.dispose();
   }
 
+  void _openFullScreenImage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => Scaffold(
+          backgroundColor: Colors.black,
+          body: Stack(
+            children: [
+              Center(
+                child: InteractiveViewer(
+                  minScale: 0.5,
+                  maxScale: 4.0,
+                  child: Image.file(
+                    widget.item.image,
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              Positioned(
+                top: 40,
+                right: 16,
+                child: Material(
+                  color: Colors.transparent,
+                  child: IconButton(
+                    icon: Container(
+                      padding: EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.close,
+                        color: Colors.white,
+                        size: 24,
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,17 +109,20 @@ class _ElementDetailsScreenState extends State<ElementDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Container(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.4,
-              ),
-              child: widget.item.image.existsSync()
-                  ? Stack(
-                      children: [
-                        InteractiveViewer(
-                          minScale: 0.5,
-                          maxScale: 4.0,
-                          child: Image.file(
+            GestureDetector(
+              onTap: () {
+                if (widget.item.image.existsSync()) {
+                  _openFullScreenImage(context);
+                }
+              },
+              child: Container(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 0.4,
+                ),
+                child: widget.item.image.existsSync()
+                    ? Stack(
+                        children: [
+                          Image.file(
                             widget.item.image,
                             fit: BoxFit.contain,
                             errorBuilder: (context, error, stackTrace) {
@@ -89,42 +139,42 @@ class _ElementDetailsScreenState extends State<ElementDetailsScreen> {
                               );
                             },
                           ),
-                        ),
-                        Positioned(
-                          top: 8,
-                          right: 8,
-                          child: Container(
-                            padding: EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.black54,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(Icons.zoom_in, color: Colors.white, size: 16),
-                                SizedBox(width: 4),
-                                Text(
-                                  'Pinch to zoom',
-                                  style: TextStyle(color: Colors.white, fontSize: 12),
-                                ),
-                              ],
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: Container(
+                              padding: EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                color: Colors.black54,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.fullscreen, color: Colors.white, size: 16),
+                                  SizedBox(width: 4),
+                                  Text(
+                                    'Tap to view full screen',
+                                    style: TextStyle(color: Colors.white, fontSize: 12),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
-                    )
-                  : Container(
-                      height: 200,
-                      color: Colors.grey[300],
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.image_not_supported, size: 64, color: Colors.grey),
-                          Text('Image file not found', style: TextStyle(color: Colors.grey)),
                         ],
+                      )
+                    : Container(
+                        height: 200,
+                        color: Colors.grey[300],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.image_not_supported, size: 64, color: Colors.grey),
+                            Text('Image file not found', style: TextStyle(color: Colors.grey)),
+                          ],
+                        ),
                       ),
-                    ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(16.0),
