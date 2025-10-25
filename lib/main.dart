@@ -3,9 +3,13 @@ import 'package:intl/intl.dart';
 import 'dart:io';
 import 'screens/new_element_screen.dart';
 import 'screens/pin_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/image_capture_screen.dart';
 import 'models/item_model.dart';
 import 'screens/element_details_screen.dart';
 import 'services/isar_service.dart';
+import 'services/preferences_service.dart';
+import 'widgets/media_selection_dialog.dart';
 
 void main() {
   runApp(MyFirstApp());
@@ -22,6 +26,7 @@ class MyFirstApp extends StatelessWidget {
       routes: {
         '/': (context) => const PinScreen(),
         '/home': (context) => const HomeScreen(),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }
@@ -99,6 +104,53 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _lastModifiedDate = DateTime.now();
     });
+  }
+
+  Future<void> _handleAddNewItem() async {
+    // Load preferences
+    final prefs = await PreferencesService.getInstance();
+    final doNotAsk = prefs.getDoNotAsk();
+    final mediaType = prefs.getMediaType();
+
+    String? selectedMediaType;
+
+    if (doNotAsk) {
+      // Use saved preference
+      selectedMediaType = mediaType;
+    } else {
+      // Show selection dialog
+      selectedMediaType = await showDialog<String>(
+        context: context,
+        builder: (context) => const MediaSelectionDialog(),
+      );
+    }
+
+    if (selectedMediaType == null) {
+      // User cancelled
+      return;
+    }
+
+    Item? newItem;
+
+    if (selectedMediaType == PreferencesService.mediaTypeVideo) {
+      // Use existing video/streaming flow
+      newItem = await showModalBottomSheet<Item>(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => NewElementScreen(),
+      );
+    } else {
+      // Use new image capture flow
+      newItem = await showModalBottomSheet<Item>(
+        context: context,
+        isScrollControlled: true,
+        builder: (context) => const ImageCaptureScreen(),
+      );
+    }
+
+    if (newItem != null) {
+      await _addItem(newItem);
+    }
   }
 
   Widget _buildTileView() {
@@ -219,15 +271,7 @@ class _HomeScreenState extends State<HomeScreen> {
           IconButton(
             icon: Icon(Icons.add),
             onPressed: () async {
-              final newItem = await showModalBottomSheet<Item>(
-                context: context,
-                isScrollControlled: true,
-                builder: (context) => NewElementScreen(),
-              );
-
-              if (newItem != null) {
-                await _addItem(newItem);
-              }
+              await _handleAddNewItem();
             },
           ),
         ],
@@ -367,6 +411,15 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.pushNamed(context, '/settings');
+        },
+        child: const Icon(Icons.settings),
+        tooltip: 'Settings',
+        backgroundColor: Colors.blue,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
