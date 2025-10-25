@@ -105,7 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return GridView.builder(
       padding: EdgeInsets.all(8),
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+        crossAxisCount: 2,
         crossAxisSpacing: 8,
         mainAxisSpacing: 8,
         childAspectRatio: 1.0,
