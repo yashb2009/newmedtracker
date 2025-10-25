@@ -116,28 +116,32 @@ class _ElementDetailsScreenState extends State<ElementDetailsScreen> {
                 }
               },
               child: Container(
+                width: double.infinity,
                 constraints: BoxConstraints(
                   maxHeight: MediaQuery.of(context).size.height * 0.4,
                 ),
                 child: widget.item.image.existsSync()
                     ? Stack(
+                        alignment: Alignment.center,
                         children: [
-                          Image.file(
-                            widget.item.image,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                height: 200,
-                                color: Colors.grey[300],
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(Icons.broken_image, size: 64, color: Colors.grey),
-                                    Text('Image not available', style: TextStyle(color: Colors.grey)),
-                                  ],
-                                ),
-                              );
-                            },
+                          Center(
+                            child: Image.file(
+                              widget.item.image,
+                              fit: BoxFit.contain,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  height: 200,
+                                  color: Colors.grey[300],
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Icon(Icons.broken_image, size: 64, color: Colors.grey),
+                                      Text('Image not available', style: TextStyle(color: Colors.grey)),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
                           ),
                           Positioned(
                             top: 8,
