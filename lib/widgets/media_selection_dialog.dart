@@ -89,6 +89,7 @@ class _MediaSelectionDialogState extends State<MediaSelectionDialog> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          mainAxisSize: MainAxisSize.min,
                           children: [
                             Text(
                               'Video',

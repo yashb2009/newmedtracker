@@ -447,15 +447,6 @@ class _NewElementScreenState extends State<NewElementScreen> {
                     ),
                 ],
               ),
-              // Add manual capture button
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: ElevatedButton.icon(
-                  onPressed: _captureCurrentFrame,
-                  icon: Icon(Icons.camera_alt),
-                  label: Text('Capture Frame'),
-                ),
-              ),
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
