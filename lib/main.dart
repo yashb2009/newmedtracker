@@ -263,11 +263,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.sort),
-            onPressed: _sortItems,
-            tooltip: 'Sort',
-          ),
-          IconButton(
             icon: Icon(_isTileView ? Icons.view_list : Icons.view_module),
             onPressed: () {
               setState(() {

@@ -310,6 +310,38 @@ class _NewElementScreenState extends State<NewElementScreen> {
     );
   }
 
+  Future<void> _showSaveCancelDialog() async {
+    final result = await showDialog<String>(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        title: Text('Save Medication'),
+        content: Text('Would you like to save this medication?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop('cancel'),
+            child: Text('Cancel', style: TextStyle(fontSize: 18)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(ctx).pop('save'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blue,
+              foregroundColor: Colors.white,
+            ),
+            child: Text('Save', style: TextStyle(fontSize: 18)),
+          ),
+        ],
+      ),
+    );
+
+    if (result == 'save') {
+      _saveItem();
+    } else if (result == 'cancel') {
+      // Just close the modal without saving
+      Navigator.pop(context);
+    }
+  }
+
   void _saveItem() {
     if (_selectedImage == null || _descriptionController.text.trim().isEmpty) {
       _showValidationAlert();
@@ -400,18 +432,6 @@ class _NewElementScreenState extends State<NewElementScreen> {
       child: Scaffold(
         appBar: AppBar(
           title: Text('Add new Element'),
-          leading: IconButton(
-            icon: Icon(Icons.close),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-          actions: [
-            IconButton(
-              icon: Icon(Icons.check),
-              onPressed: _saveItem,
-            ),
-          ],
         ),
         body: Column(
           children: [
@@ -478,6 +498,8 @@ class _NewElementScreenState extends State<NewElementScreen> {
                   if (_isStreaming) {
                     _cameraController?.stopImageStream();
                     setState(() => _isStreaming = false);
+                    // Show save/cancel dialog after stopping
+                    _showSaveCancelDialog();
                   } else {
                     _rotationComplete = false;
                     _allTextBlocks.clear();
