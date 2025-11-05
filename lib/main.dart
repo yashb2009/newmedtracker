@@ -255,10 +255,18 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: Text("My First App"),
         leading: IconButton(
-          icon: Icon(Icons.sort),
-          onPressed: _sortItems,
+          icon: Icon(Icons.settings),
+          onPressed: () {
+            Navigator.pushNamed(context, '/settings');
+          },
+          tooltip: 'Settings',
         ),
         actions: [
+          IconButton(
+            icon: Icon(Icons.sort),
+            onPressed: _sortItems,
+            tooltip: 'Sort',
+          ),
           IconButton(
             icon: Icon(_isTileView ? Icons.view_list : Icons.view_module),
             onPressed: () {
@@ -267,12 +275,6 @@ class _HomeScreenState extends State<HomeScreen> {
               });
             },
             tooltip: _isTileView ? 'List View' : 'Tile View',
-          ),
-          IconButton(
-            icon: Icon(Icons.add),
-            onPressed: () async {
-              await _handleAddNewItem();
-            },
           ),
         ],
       ),
@@ -409,17 +411,32 @@ class _HomeScreenState extends State<HomeScreen> {
                     },
                   ),
           ),
+          // Full-width Add Medication button at bottom
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
+            child: ElevatedButton(
+              onPressed: () async {
+                await _handleAddNewItem();
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.blue,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 20),
+                textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const [
+                  Icon(Icons.add, size: 28),
+                  SizedBox(width: 8),
+                  Text('Add Medication'),
+                ],
+              ),
+            ),
+          ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushNamed(context, '/settings');
-        },
-        child: const Icon(Icons.settings),
-        tooltip: 'Settings',
-        backgroundColor: Colors.blue,
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
 }
