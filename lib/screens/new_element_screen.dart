@@ -413,73 +413,97 @@ class _NewElementScreenState extends State<NewElementScreen> {
             ),
           ],
         ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Stack(
-                children: [
-                  Container(
-                    width: 300,
-                    height: 400,
-                    child: CameraPreview(_cameraController!),
-                  ),
-                  // Show captured indicator
-                  if (_hasCapture)
-                    Positioned(
-                      top: 10,
-                      right: 10,
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          borderRadius: BorderRadius.circular(12),
+        body: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 20),
+                    Stack(
+                      children: [
+                        Container(
+                          width: 300,
+                          height: 400,
+                          child: CameraPreview(_cameraController!),
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(Icons.check, color: Colors.white, size: 16),
-                            SizedBox(width: 4),
-                            Text('Captured', style: TextStyle(color: Colors.white, fontSize: 12)),
-                          ],
+                        // Show captured indicator
+                        if (_hasCapture)
+                          Positioned(
+                            top: 10,
+                            right: 10,
+                            child: Container(
+                              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: Colors.green,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.check, color: Colors.white, size: 16),
+                                  SizedBox(width: 4),
+                                  Text('Captured', style: TextStyle(color: Colors.white, fontSize: 12)),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    Padding(
+                      padding:
+                          const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      child: TextField(
+                        controller: _descriptionController,
+                        maxLines: 5,
+                        keyboardType: TextInputType.multiline,
+                        decoration: InputDecoration(
+                          hintText: 'Enter your description',
+                          border: OutlineInputBorder(),
+                          alignLabelWithHint: true,
+                          contentPadding: EdgeInsets.all(16),
                         ),
                       ),
                     ),
-                ],
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-                child: TextField(
-                  controller: _descriptionController,
-                  maxLines: 5,
-                  keyboardType: TextInputType.multiline,
-                  decoration: InputDecoration(
-                    hintText: 'Enter your description',
-                    border: OutlineInputBorder(),
-                    alignLabelWithHint: true,
-                    contentPadding: EdgeInsets.all(16),
-                  ),
+                  ],
                 ),
               ),
-            ],
-          ),
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            if (_isStreaming) {
-              _cameraController?.stopImageStream();
-              setState(() => _isStreaming = false);
-            } else {
-              _rotationComplete = false;
-              _allTextBlocks.clear();
-              _lastNewTextTime = DateTime.now();
-              _hasCapture = false; // Reset capture flag
-              _startStreaming();
-              setState(() => _isStreaming = true);
-            }
-          },
-          child: Icon(_isStreaming ? Icons.stop : Icons.play_arrow),
+            ),
+            // Full-width button at bottom
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(16),
+              child: ElevatedButton(
+                onPressed: () {
+                  if (_isStreaming) {
+                    _cameraController?.stopImageStream();
+                    setState(() => _isStreaming = false);
+                  } else {
+                    _rotationComplete = false;
+                    _allTextBlocks.clear();
+                    _lastNewTextTime = DateTime.now();
+                    _hasCapture = false; // Reset capture flag
+                    _startStreaming();
+                    setState(() => _isStreaming = true);
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: _isStreaming ? Colors.red : Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 20),
+                  textStyle: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(_isStreaming ? Icons.stop : Icons.play_arrow, size: 28),
+                    const SizedBox(width: 8),
+                    Text(_isStreaming ? 'STOP' : 'START'),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
