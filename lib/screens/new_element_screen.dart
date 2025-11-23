@@ -10,6 +10,8 @@ import 'package:path/path.dart' as path;
 import '../models/item_model.dart';
 import 'medications.dart';
 import 'package:uuid/uuid.dart';
+import '../services/preferences_service.dart';
+import '../widgets/bottle_instructions_dialog.dart';
 
 class NewElementScreen extends StatefulWidget {
   @override
@@ -494,19 +496,37 @@ class _NewElementScreenState extends State<NewElementScreen> {
               width: double.infinity,
               padding: const EdgeInsets.all(16),
               child: ElevatedButton(
-                onPressed: () {
+                onPressed: () async {
                   if (_isStreaming) {
                     _cameraController?.stopImageStream();
                     setState(() => _isStreaming = false);
                     // Show save/cancel dialog after stopping
                     _showSaveCancelDialog();
                   } else {
-                    _rotationComplete = false;
-                    _allTextBlocks.clear();
-                    _lastNewTextTime = DateTime.now();
-                    _hasCapture = false; // Reset capture flag
-                    _startStreaming();
-                    setState(() => _isStreaming = true);
+                    // Check if we should show the bottle instructions dialog
+                    final prefs = await PreferencesService.getInstance();
+                    final shouldShowInstructions = !prefs.getDoNotShowBottleInstructions();
+
+                    bool shouldProceed = true;
+                    if (shouldShowInstructions) {
+                      // Show the instructions dialog
+                      final result = await showDialog<bool>(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (ctx) => const BottleInstructionsDialog(),
+                      );
+                      shouldProceed = result ?? false;
+                    }
+
+                    // Only proceed if user clicked "Got it" or if dialog wasn't shown
+                    if (shouldProceed) {
+                      _rotationComplete = false;
+                      _allTextBlocks.clear();
+                      _lastNewTextTime = DateTime.now();
+                      _hasCapture = false; // Reset capture flag
+                      _startStreaming();
+                      setState(() => _isStreaming = true);
+                    }
                   }
                 },
                 style: ElevatedButton.styleFrom(
