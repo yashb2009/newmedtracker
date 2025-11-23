@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class PreferencesService {
   static const String _keyMediaType = 'media_type';
   static const String _keyDoNotAsk = 'do_not_ask_media_type';
+  static const String _keyDoNotShowBottleInstructions = 'do_not_show_bottle_instructions';
 
   static PreferencesService? _instance;
   static SharedPreferences? _preferences;
@@ -38,9 +39,20 @@ class PreferencesService {
     await _preferences?.setBool(_keyDoNotAsk, value);
   }
 
+  // Check if user selected "Do not show bottle instructions again"
+  bool getDoNotShowBottleInstructions() {
+    return _preferences?.getBool(_keyDoNotShowBottleInstructions) ?? false;
+  }
+
+  // Set the "Do not show bottle instructions again" preference
+  Future<void> setDoNotShowBottleInstructions(bool value) async {
+    await _preferences?.setBool(_keyDoNotShowBottleInstructions, value);
+  }
+
   // Reset all preferences (useful for testing or settings reset)
   Future<void> resetPreferences() async {
     await _preferences?.remove(_keyMediaType);
     await _preferences?.remove(_keyDoNotAsk);
+    await _preferences?.remove(_keyDoNotShowBottleInstructions);
   }
 }
