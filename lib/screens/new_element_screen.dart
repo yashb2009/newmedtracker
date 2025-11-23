@@ -34,6 +34,7 @@ class _NewElementScreenState extends State<NewElementScreen> {
   bool _isProcessing = false;
   int _frameCount = 0;
   bool _hasCapture = false; // Track if we've captured a frame
+  bool _hasShownInstructionsThisSession = false; // Track if instructions were shown
 
   final List<TextBlock> _allTextBlocks = [];
   
@@ -507,18 +508,21 @@ class _NewElementScreenState extends State<NewElementScreen> {
                     final prefs = await PreferencesService.getInstance();
                     final shouldShowInstructions = !prefs.getDoNotShowBottleInstructions();
 
-                    if (shouldShowInstructions) {
+                    if (shouldShowInstructions && !_hasShownInstructionsThisSession) {
                       // Show the instructions dialog
                       await showDialog<bool>(
                         context: context,
                         barrierDismissible: false,
                         builder: (ctx) => const BottleInstructionsDialog(),
                       );
-                      // After user clicks "Got it", wait for them to click Start again
+                      setState(() {
+                        _hasShownInstructionsThisSession = true;
+                      });
+                      // Return so user has to click Start again to actually start
                       return;
                     }
 
-                    // Start streaming (only if instructions weren't shown)
+                    // Start streaming
                     _rotationComplete = false;
                     _allTextBlocks.clear();
                     _lastNewTextTime = DateTime.now();
