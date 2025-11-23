@@ -507,26 +507,24 @@ class _NewElementScreenState extends State<NewElementScreen> {
                     final prefs = await PreferencesService.getInstance();
                     final shouldShowInstructions = !prefs.getDoNotShowBottleInstructions();
 
-                    bool shouldProceed = true;
                     if (shouldShowInstructions) {
                       // Show the instructions dialog
-                      final result = await showDialog<bool>(
+                      await showDialog<bool>(
                         context: context,
                         barrierDismissible: false,
                         builder: (ctx) => const BottleInstructionsDialog(),
                       );
-                      shouldProceed = result ?? false;
+                      // After user clicks "Got it", wait for them to click Start again
+                      return;
                     }
 
-                    // Only proceed if user clicked "Got it" or if dialog wasn't shown
-                    if (shouldProceed) {
-                      _rotationComplete = false;
-                      _allTextBlocks.clear();
-                      _lastNewTextTime = DateTime.now();
-                      _hasCapture = false; // Reset capture flag
-                      _startStreaming();
-                      setState(() => _isStreaming = true);
-                    }
+                    // Start streaming (only if instructions weren't shown)
+                    _rotationComplete = false;
+                    _allTextBlocks.clear();
+                    _lastNewTextTime = DateTime.now();
+                    _hasCapture = false; // Reset capture flag
+                    _startStreaming();
+                    setState(() => _isStreaming = true);
                   }
                 },
                 style: ElevatedButton.styleFrom(
