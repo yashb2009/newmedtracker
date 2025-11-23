@@ -53,13 +53,6 @@ class _BottleInstructionsDialogState extends State<BottleInstructionsDialog> {
         ),
       ),
       actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(false),
-          child: const Text(
-            'Cancel',
-            style: TextStyle(fontSize: 16),
-          ),
-        ),
         ElevatedButton(
           onPressed: () async {
             // Save preference if "Do not show again" is checked

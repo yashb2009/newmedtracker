@@ -509,16 +509,12 @@ class _NewElementScreenState extends State<NewElementScreen> {
 
                     if (shouldShowInstructions) {
                       // Show the instructions dialog
-                      final result = await showDialog<bool>(
+                      await showDialog<bool>(
                         context: context,
                         barrierDismissible: false,
                         builder: (ctx) => const BottleInstructionsDialog(),
                       );
-                      // If user cancelled, don't proceed
-                      if (result != true) {
-                        return;
-                      }
-                      // If user clicked "Got it", just return and wait for them to click Start again
+                      // After user clicks "Got it", wait for them to click Start again
                       return;
                     }
 
