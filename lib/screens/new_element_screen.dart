@@ -514,11 +514,9 @@ class _NewElementScreenState extends State<NewElementScreen> {
                         barrierDismissible: false,
                         builder: (ctx) => const BottleInstructionsDialog(),
                       );
-                      // After user clicks "Got it", wait for them to click Start again
-                      return;
                     }
 
-                    // Start streaming (only if instructions weren't shown)
+                    // Start streaming
                     _rotationComplete = false;
                     _allTextBlocks.clear();
                     _lastNewTextTime = DateTime.now();
