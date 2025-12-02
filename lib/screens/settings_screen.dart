@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../services/preferences_service.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -66,6 +67,20 @@ class _SettingsScreenState extends State<SettingsScreen> {
           duration: Duration(seconds: 2),
         ),
       );
+    }
+  }
+
+  Future<void> _openFeedbackForm() async {
+    final Uri url = Uri.parse('https://forms.gle/WhhmHwWuDW4dnBwh8');
+    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not open feedback form'),
+            duration: Duration(seconds: 2),
+          ),
+        );
+      }
     }
   }
 
@@ -212,6 +227,39 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
 
                 const SizedBox(height: 16),
+
+                // Feedback section
+                const Padding(
+                  padding: EdgeInsets.all(16.0),
+                  child: Text(
+                    'Feedback',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+
+                // Feedback form button
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: ListTile(
+                    leading: Icon(Icons.feedback, color: Colors.blue.shade700),
+                    title: const Text('Send Feedback'),
+                    subtitle: const Text(
+                      'Share your thoughts and suggestions',
+                      style: TextStyle(fontSize: 12),
+                    ),
+                    trailing: const Icon(Icons.open_in_new),
+                    onTap: _openFeedbackForm,
+                    tileColor: Colors.blue.shade50,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                  ),
+                ),
+
+                const Divider(height: 32),
 
                 // Info section
                 Padding(
